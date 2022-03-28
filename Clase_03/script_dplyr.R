@@ -104,7 +104,7 @@ tidy_data %>% group_by(Especie) %>%
             Maximo_Peso = max(Peso, na.rm=T))
 
 # EJERCICIO
-# Usando tidy_data calcule n, promedio y desviasión estándar de parasitos por especie.
+# Usando tidy_data calcule n, promedio y desviación estándar de parasitos por especie.
 
 
 # FUNCIÓN MUTATE()
