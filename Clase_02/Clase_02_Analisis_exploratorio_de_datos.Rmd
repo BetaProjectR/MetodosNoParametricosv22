@@ -32,7 +32,7 @@ library(grid)
 - Clasificación de variables.
 - Variables discretas.
 - Distribución Bernoulli y Binomial negativa.
-- Gráficas avanzadas con ggplot2
+- Gráficas avanzadas con ggplot2.
 
 **2.- Práctica con R y Rstudio cloud**
 
@@ -52,7 +52,7 @@ Procedimiento que permite visualizar y explorar los datos de un estudio.
 
 4- Establecer un modelo básico de relación e interacción entre variables.  
 
-5- Seleccionar una prueba estadÍstica adecuada.   
+5- Seleccionar una prueba estadística adecuada.   
 
 ## EDA ES UN PROCESO ITERATIVO
 
