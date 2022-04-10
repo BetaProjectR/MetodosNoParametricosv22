@@ -1,6 +1,6 @@
 ---
-title: "Guia de correlación y tablas de contingencia"
-subtitle: 'Métodos de análisis no paramétricos'
+title: "Clase 05 - Guia de correlación no paramétrica"
+subtitle: 'Técnicas de análisis no paramétricos'
 author:
  name: Dr. José A. Gallardo.
  affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
@@ -13,14 +13,13 @@ output:
   pdf_document: default
 ---
 
-#### Objetivos de aprendizaje
+## Objetivos de aprendizaje
 
-- Calcular el número de permutaciones para diferentes experimentos.
+- Calcular permutaciones y espacio muestral para diferentes experimentos.
 
-- Realizar análisis de correlación con R.
+- Aplicar pruebas de correlación no paramétrica a datos ocenaográficos.
 
-  
-#### Conceptos importantes
+## Conceptos importantes
 
 El concepto matemático de permutación está subyacente a muchos métodos de análisis no paramétricos. 
 
@@ -36,82 +35,149 @@ Las tablas de contingencia se usan comúnmente para resumir datos de variables c
 Las pruebas no paramétricas Chi cuadrado y Fisher se usan investigar la asociación de dos o más variables categóricas una de las cuales es una variable respuesta y otra es una variable predictora.
 
 
-#### Software.
+## Software.
 
 Esta es la versión de R que se usó para crear esta guía.
 ```{r, echo=TRUE}
 R.version.string
 ```
 
-#### Librerías.
+
+```{r setup, include=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(readxl)
+library(gtools) # Para calcular permutaciones
+```
+
+## Paquetes.
   
 **{stats}**
   
-#### Comandos para realizar los análisis.
+## Comandos para realizar los análisis.
 
-1.- Test de correlación  
+Test de correlación  
 **cor.test()**
 
-2.- Prueba de chi cuadrado   
-***chisq.test()***
+Calcular permutaciones sin repetición.
+**factorial()**  
 
-3.- test de fisher  
-**fisher.test()**
+Calcular permutaciones posibles para un conjunto de datos.
+**permutations()**
 
-#### EJERCICIOS
+## Ejemplo calculo de permutaciones
 
-Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+¿Cuántas permutaciones existen para P4?
+P4 = {a,b,c,d}
 
-Elabore un archivo Rmarkdown o file con extensión **.Rmd** en Rstudio o Rstudio.cloud y configurelo para exportar el resultado como un documento dinámico **pdf**. 
+    factorial(4)
+    24
 
-En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera *knitr::opts_chunk$set(echo = TRUE)* y habilite la librería **stats** usando la función library().
+¿Cuales son las permutaciones posibles para P4
+    
+    permutations(4,4,letters[1:4], repeats.allowed = FALSE)
+        [,1] [,2] [,3] [,4]
+        [1,] "a"  "b"  "c"  "d" 
+        [2,] "a"  "b"  "d"  "c" 
+        [3,] "a"  "c"  "b"  "d" 
+        ---
+        [22,] "d"  "b"  "c"  "a" 
+        [23,] "d"  "c"  "a"  "b" 
+        [24,] "d"  "c"  "b"  "a"
+            
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(stats)
-library(pander)
+## **Ejercicios**
+
+### **Ejercicio 1.** **Elaborar un Script de R**
+
+Elabore un archivo o file con extensión **.R** usando la barra de herramientas de **Rstudio**. Selecciona **File \> New file \> R script**. Utilice el siguiente ejemplo para completar la información de **metadatos** del script.
+
+    # ----------------------------------------------------------  
+    # Clase 05 - Guia permutación y correlación no paramétrica   
+    # Su nombre: 
+    # 09 abril 2022. 
+    # Curso OCE 313 - Técnicas de análisis no paramétricos. 
+    # ----------------------------------------------------------  
+
+Luego, guarde inmediatamente su script como **script_correlaciones_nombre_apellido.R**.
+
+### **Ejercicio 2.** **Configuración de librerías**
+
+Debajo del **metadatos** habilite los paquetes **readxl** y **gtools** usando la función **library()**. Note que los paquetes **base**, **stats**, **utils** y **graphics** ya están habilitados.
+
+```{r, include=TRUE, message=FALSE, warning=FALSE}
+library(readxl)
+library(gtools) # Para calcular permutaciones
 ```
 
-**Ejercicio 1.** En el siguiente experimento se desea evaluar si el tamaño de los peces puede asociarse de forma positiva o negativa con el número de parasitos.
+### **Ejercicio 3.**  **Test de correlación abundancia de moluscos y profundidad.**
+
+Dado el siguiente resultado de un experimento de correlación entre 5 pares de observaciones de abundancia de moluscos y profundidad. Responda.
 
 ```{r, echo=FALSE}
-fish_size <- c(942,101,313,800)
-parasites <- c(13,14,18,10)
+abundancia <- c(475,600,500,400,450)
+profundidad <- c(10,20,30,40,50)
 
-dat <- data.frame(fish_size, parasites)
+dat <- data.frame(profundidad, abundancia)
   
-knitr::kable(dat, col.names=c("Tamaño (g)","Nº Parasitos"), caption = "Tabla 1. Tamaño de los peces y número de parasitos")
+knitr::kable(dat, col.names=c("Profundidad (m)", "Abundancia (n)"), caption = "Tabla 1. Abundancia de moluscos en función de la profundidad.")
 
 ```
 
-a) Escriba su hipótesis nula y alternativa para este experimento.
+
+**a)** Escriba una hipótesis nula y alternativa para evaluar la correlación de las variables de este experimento.
 
 ```{r}
 
-# H0 : El tamaño de los peces y el número de parásitos son mutuamente independientes. 
-# H1 : El tamaño de los peces y el número de parásitos no son mutuamente independientes. 
+# H0 : La abundancia de moluscos y la profundidad son mutuamente independientes. 
+# H1 : La abundancia de moluscos y la profundidad no son mutuamente independientes. 
 
 ```
 
-b) Cree un data.frame con las columnas Fish size (x) e Parasitos (y).
+**b) ** ¿Cuántas permutaciones/correlaciones son posibles para este conjunto de datos?
+Considere R5 = {1,2,3,4,5}, Use **factorial()**.
+
+**b)** ¿Cuales son las permutaciones posibles para R5? Use **permutations()**.
+
+**c)** Elabore un data.frame con las columnas profundidad (x) y abundancia (y).
+
+**d)** Grafique la relación entre ambas variables usando ggplot2.
+
+**e)** Determine el coeficiente de correlación de spearman usando **cor()**
+
+**f)** Realice una prueba de correlación no paramétrica de spearman usando **cor.tes()**. Procure detallar si su prueba es de una cola o dos colas.
+
+**g)** Interprete el coeficiente de correlación obtenido y si acepta o rechaza su hipótesis basado en el valor de probabilidad.
+
+
+**Ejercicio 4.** **Test de correlación acidificación del océano**
+
+Con el objetivo de evaluar la ocurrencia de la acidificacion del océano la Royal Geographical Society realizó un crucero al océano Ártico en el cual de midió el pH y la alcalinidad d eun total de 20 muestras. Importe a R los datos y responda.
 
 ```{r}
-# Crea objetos X e Y 
-X <- c(942,101,313,800)
-Y <- c(13,14,18,10)
+Royal <- read_excel("Royal.xlsx")
+  
+knitr::kable(head(Royal), col.names=c("Fecha", "pH", "Alcalinidad"), caption = "Tabla 1. pH y alcalinidad medida en el océano ártico.")
 
-Parasitos <- data.frame(X,Y)
-colnames(Parasitos) <- c("Fish size", "Parasitos")
-Parasitos
-class(Parasitos)
 ```
 
-c) Ponga a prueba su hipótesis usando el test de correlación de spearman usando la función **cor.test()**, no olvide seleccionar en el argumento *alternative=""* que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*.
+**a)** Escriba una hipótesis nula y alternativa para evaluar la correlación de las variables de este experimento.
 
 ```{r}
-# Realiza test de correlación
-cor.test(Parasitos$`Fish size`,Parasitos$Parasitos, method = "spearman", alternative = "two.sided")
+
+# H0 : El pH y la alcalinidad del océano son mutuamente independientes. 
+# H1 : El pH y la alcalinidad del océano no son mutuamente independientes. 
+
 ```
 
-d) Interprete sus resultados.
+**b) ** ¿Cuántas permutaciones/correlaciones son posibles para este conjunto de datos?
+Considere R20 = {1,2,3,4,5... 20}, Use **factorial()**. Precaución: El número de permutaciones incremente rápidamente con n y r!.
 
+**b)** Importe y explore el set de datos con **read_excel()** **summary()**.
+
+**c)** Grafique la relación entre ambas variables usando ggplot2.
+
+**d)** Determine el coeficiente de correlación de spearman usando **cor()**
+
+**e)** Realice una prueba de correlación no paramétrica de spearman usando **cor.tes()**. Procure detallar si su prueba es de una cola o dos colas.
+
+**f)** Interprete el coeficiente de correlación obtenido y si acepta o rechaza su hipótesis basado en el valor de probabilidad.

@@ -40,7 +40,7 @@ permutations(4,4,letters[1:4], repeats.allowed = FALSE)
 # a) Grafique la relación entre las variables usando ggplot2.
 # b) Elabore una hipótesis para este estudio.
 # c) Determine el coeficiente de correlación de spearman.
-# c) Realice una prueba de correlación.
+# c) Realice una prueba de correlación no paramétrica.
 # d) Interprete el coeficiente de correlación obtenido y si acepta o rechaza su hipótesis.
 X <- c(475,600,500,400,450)
 Y <- c(10,20,30,40,50)
@@ -52,6 +52,6 @@ cor.test(X,Y, method = "spearman", alternative = "two.sided")
 # a) Grafique la relación entre las variables usando ggplot2.
 # b) Elabore una hipótesis para este estudio.
 # c) Determine el coeficiente de correlación de spearman.
-# c) Realice una prueba de correlación.
+# c) Realice una prueba de correlación no paramétrica.
 # d) Interprete el coeficiente de correlación obtenido y si acepta o rechaza su hipótesis.
 
