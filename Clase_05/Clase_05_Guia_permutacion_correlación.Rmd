@@ -1,0 +1,117 @@
+---
+title: "Guia de correlación y tablas de contingencia"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+- Calcular el número de permutaciones para diferentes experimentos.
+
+- Realizar análisis de correlación con R.
+
+  
+#### Conceptos importantes
+
+El concepto matemático de permutación está subyacente a muchos métodos de análisis no paramétricos. 
+
+Las pruebas de correlación no paramétricos se usan cuando no se cumplen los supuestos del analsis de correlacion paramátrico de pearson:
+
+Supuestos:
+Las variables X e Y son continuas.
+Existe relación lineal.
+La distribución conjunta de (X, Y) es una distribución Bivariable normal.
+
+Las tablas de contingencia se usan comúnmente para resumir datos de variables categóricas (ej. Cualitativas, dicotómicas).
+
+Las pruebas no paramétricas Chi cuadrado y Fisher se usan investigar la asociación de dos o más variables categóricas una de las cuales es una variable respuesta y otra es una variable predictora.
+
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{stats}**
+  
+#### Comandos para realizar los análisis.
+
+1.- Test de correlación  
+**cor.test()**
+
+2.- Prueba de chi cuadrado   
+***chisq.test()***
+
+3.- test de fisher  
+**fisher.test()**
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Elabore un archivo Rmarkdown o file con extensión **.Rmd** en Rstudio o Rstudio.cloud y configurelo para exportar el resultado como un documento dinámico **pdf**. 
+
+En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera *knitr::opts_chunk$set(echo = TRUE)* y habilite la librería **stats** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+library(pander)
+```
+
+**Ejercicio 1.** En el siguiente experimento se desea evaluar si el tamaño de los peces puede asociarse de forma positiva o negativa con el número de parasitos.
+
+```{r, echo=FALSE}
+fish_size <- c(942,101,313,800)
+parasites <- c(13,14,18,10)
+
+dat <- data.frame(fish_size, parasites)
+  
+knitr::kable(dat, col.names=c("Tamaño (g)","Nº Parasitos"), caption = "Tabla 1. Tamaño de los peces y número de parasitos")
+
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : El tamaño de los peces y el número de parásitos son mutuamente independientes. 
+# H1 : El tamaño de los peces y el número de parásitos no son mutuamente independientes. 
+
+```
+
+b) Cree un data.frame con las columnas Fish size (x) e Parasitos (y).
+
+```{r}
+# Crea objetos X e Y 
+X <- c(942,101,313,800)
+Y <- c(13,14,18,10)
+
+Parasitos <- data.frame(X,Y)
+colnames(Parasitos) <- c("Fish size", "Parasitos")
+Parasitos
+class(Parasitos)
+```
+
+c) Ponga a prueba su hipótesis usando el test de correlación de spearman usando la función **cor.test()**, no olvide seleccionar en el argumento *alternative=""* que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*.
+
+```{r}
+# Realiza test de correlación
+cor.test(Parasitos$`Fish size`,Parasitos$Parasitos, method = "spearman", alternative = "two.sided")
+```
+
+d) Interprete sus resultados.
+
