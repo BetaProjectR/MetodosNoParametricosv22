@@ -1,5 +1,5 @@
 ---
-title: "Clase 05 - Guia de correlación no paramétrica"
+title: "Clase 05 - Guia de permutaciónes y correlación no paramétrica"
 subtitle: 'Técnicas de análisis no paramétricos'
 author:
  name: Dr. José A. Gallardo.
