@@ -25,11 +25,13 @@ library(kableExtra)
 
 ## **1.- Introducción**
     
-- Concepto de permutación:
-- ¿Qué es? ¿Por qué es importante? ¿Qué haremos?
-- Permutación : caso 1, 2 y 3
-- Problema de permutación.
-- Prueba de correlación no paramétrica.
+- Permutación: ¿Qué es? ¿Por qué es importante?.
+- Permutación: caso 1, 2 y 3.
+- Correlación no paramétrica.
+- Calculo de correlación no paramétrica.
+- Distribución muestral por permutación.
+- Prueba de hipótesis de correlación no paramétrica.
+
 
 ## **2). Práctica con R y Rstudio cloud.**
 
@@ -52,8 +54,8 @@ Calcularemos las posibles permutaciones de los elementos de un conjunto de datos
 
 1.- Si para el conjunto {a,b} existen 2 permutaciones a-b y b-a
 
-¿Cuántas permutaciones de los elementos {a,b,c} existen?
-- P3 = 3! = 3 x 2 x 1 = 6
+¿Cuántas permutaciones existen para conjutno {a,b,c}?  
+P3 = 3! = 3 x 2 x 1 = 6
 
 ```{r, echo=TRUE}
 factorial(3)
@@ -64,7 +66,7 @@ permutations(3,3,letters[1:3])
 
 - ¿Cuántas claves diferentes existen en el candado de 3 filas?
 
-Para 3 filas con 10 números {0.. 9} existen 10 x 1 0 x 10 permutaciones = 1000.
+Para 3 filas con 10 números {0 al 9} existen 10x10x10 permutaciones = 1000.
 
 ```{r, echo=TRUE}
 10^3
@@ -146,7 +148,7 @@ plot(y,x,pch=16, xlab = "Tamaño del pez", ylab = "parásitos", col = "red")
 | 313 | 18 | 2 | 4 | 
 | 800 | 10 | 3 | 1 | 
 
-- Si la correlación es +, valores ordenados en ambas variables.
+- Si la correlación es +, valores ordenados.
 - Si la correlación en -, valores en orden inverso.
 - Si la correlación es 0, valores desordenados.
 
@@ -230,7 +232,7 @@ factorial(4)
 
 # ESPACIO MUESTRAL
 
-- En nuestro experimento $$\rho= -0.6$$.
+- En nuestro experimento $$\rho= -0.6$$
 - 1 de 24 correlaciones posibles.
 
 ```{r}
