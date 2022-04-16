@@ -1,0 +1,154 @@
+---
+title: "Guia tablas de contingencia"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+---
+
+#### Objetivos de aprendizaje
+
+Realizar análisis chi cuadrado y test exacto de fisher con el **[software R](https://es.r4ds.hadley.nz/an%C3%A1lisis-exploratorio-de-datos-eda.html)**.
+  
+#### Conceptos importantes
+
+
+Las tablas de contingencia se usan comúnmente para resumir datos de variables categóricas (ej. Cualitativas, dicotómicas).
+
+Las pruebas no paramétricas Chi cuadrado y Fisher se usan para investigar la asociación de dos o más variables categóricas una de las cuales suele ser una variable respuesta y otra una variable predictora.
+
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Comandos para realizar los análisis.
+
+1.- Prueba de chi cuadrado   
+***chisq.test()***
+
+2.- test de fisher  
+**fisher.test()**
+
+### EJERCICIOS
+
+#### **Ejercicio 1.**
+Elaborar un Script de R (Archivo .R)
+
+Elabore un archivo o file con extensión **.R** usando la barra de herramientas de **Rstudio**. Selecciona **File > New file > R script**. Utilice el siguiente ejemplo para completar la información de **metadatos** del script.
+
+    # ----------------------------------------------------------  
+    # Clase 6 - Script Análisis de tablas de contingencia  
+    # Su nombre. 
+    # Fecha de hoy. 
+    # OCE 313 - Técnicas de análisis no paramétricos.
+    # ----------------------------------------------------------  
+
+Luego, guarde inmediatamente su script como **script_EDA_nombre_apellido.R**.
+
+#### **Ejercicio 2.**
+Configuración del Script.
+
+```{r setup, include=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(stats)
+library(pander)
+```
+
+Cargue el paquete **stats** usando la función **library()**.
+
+```{r, warning=FALSE,message=FALSE}
+library(stats)
+```
+
+#### **Ejercicio 3.**
+En el siguiente experimento se desea evaluar si la forma de un arrecife artificial está asociada a la diversidad de peces marinos luego de 1 mes de su instalación.
+
+```{r echo=FALSE}
+M <- as.table(rbind(c(22, 24, 16), c(7, 9, 25)))
+dimnames(M) <- list(respuesta = c("Aumenta", "No aumenta"), tratamiento = c("Domo","Coral", "Cuadrado"))
+
+knitr::kable(M, caption = "Tabla 2. Efecto de la forma del arrecife en la diversidad de peces marinos.")
+
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r, echo=TRUE}
+# H0 : La forma de los arrecifes artificiales y la diversidad de peces marinos son independientes. 
+# H1 : La forma de los arrecifes artificiales y la diversidad de peces marinos no son independientes.
+```
+
+b) Cree una matriz de 3x2 con los datos del experimento. Incluya los nombres de filas y columnas usando el comando **dimnames()**.
+
+```{r}
+
+# Crea un vector con los datos
+arrecifes <- c(22, 24, 16, 7, 9, 25)
+
+# Transforma el vector de datos a una matriz
+dim(arrecifes) <- c(3,2)
+dimnames(arrecifes) <- list(tratamiento = c("Domo","Coral", "Cuadrado"), respuesta = c("Aumenta", "No aumenta"))
+
+arrecifes
+class(arrecifes)
+```
+
+c) Ponga a prueba su hipótesis usando el test de chi cuadrado usando la función **chisq.test()**. 
+
+```{r}
+
+# Test de Chi-squared en R (chisq.test)
+chisq.test(arrecifes)
+
+```
+
+d) Interprete sus resultados.
+
+#### **Ejercicio 4.**
+En el siguiente experimento se desea evaluar si el tratamiento de biorremediación microbiana es mejor en reducir la contaminación de hidrocarburos en una muestra de playas contaminadas que un tratamiento de biorremediación enzimática.
+
+
+```{r}
+Biorremediacion <- matrix(c(7, 3, 1, 9), nrow= 2, 
+    dimnames = list(response = c("Reduce", "No reduce"), treatment = c("Microbiana","Enzimática")))
+Biorremediacion
+
+knitr::kable(Biorremediacion, caption = "Tabla 3. Efecto de dos tratamientos de biorremediación sobre la contaminación de 20 playas.")
+```
+
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r, echo=TRUE}
+# H0 : La proporción de reducción de contaminantes es igual en ambos tratamientos. 
+# H1 : La proporción de reducción de contaminantes es mayor en el tratamiento microbiando.
+```
+
+b) Cree una matriz de 2x2 con los datos del experimento. Incluya los nombres de filas y columnas usando el comando **dimnames()**.
+
+```{r}
+Biorremediacion <- matrix(c(7, 3, 1, 9), nrow= 2, 
+    dimnames = list(response = c("Reduce", "No reduce"), treatment = c("Microbiana","Enzimática")))
+Biorremediacion
+
+```
+
+c) Ponga a prueba su hipótesis usando el test exacto de fisher usando la función **fisher.test()**, , no olvide seleccionar en el argumento *alternative=""* que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*.
+
+```{r}
+
+Fisht<- fisher.test(Biorremediacion, alternative = "greater")
+
+Fisht
+```
+
+d) Interprete sus resultados.
