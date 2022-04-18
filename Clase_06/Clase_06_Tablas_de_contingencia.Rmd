@@ -123,29 +123,29 @@ Se rechaza hipótesis nula, y por lo tantoconcluimos que no hay diferencia en lo
 
 ```{r}
 #create density curve
-curve(dchisq(x, df = 2), from = 0, to = 15,
-main = 'Valor crítico para p= 0,05 y 2 gl = 5,99',
+curve(dchisq(x, df = 1), from = 0, to = 15,
+main = 'Valor crítico para p= 0,05 y 1 gl = 3,84',
 ylab = 'Probabilidad',
 lwd = 2,
 xlab="Valor chi cuadrado.")
 
 #find upper and lower values for middle 95% of distribution
-upper95 <- qchisq(.95, 2)
+upper95 <- qchisq(.95, 1)
 
 #create vector of x values
 x_upper95 <- seq(upper95, 40)
 
 #create vector of chi-square density values
-p_upper95 <- dchisq(x_upper95, df = 2)
+p_upper95 <- dchisq(x_upper95, df = 1)
 
 #fill in portion of the density plot for upper 95% value to end of plot
 polygon(c(x_upper95, rev(x_upper95)), c(p_upper95, rep(0, length(p_upper95))),
         col = adjustcolor('red', alpha=0.3), border = NA)
 
-text(6, 0.22, "Valor crítido = 5,99")
-arrows(x0 = 5.991,
+text(6, 0.22, "Valor crítido = 3,84")
+arrows(x0 = 3.84,
        y0 = 0.2,
-       x1 = 5.991,
+       x1 = 3.84,
        y1 = 0.04)
 
 
@@ -161,7 +161,7 @@ arrows(x0 = 7.28,
 
 ```{r, echo=TRUE}
 # Crea matriz de datos
-datos <- c(20, 5, 80, 95)
+datos <- c(30, 15, 80, 95)
 dim(datos) <- c(2,2)
 # Test de Chi-squared en R (chisq.test)
 chisq.test(datos, correct = FALSE)
