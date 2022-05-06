@@ -1,0 +1,250 @@
+---
+title: "Guía estadística no paramétrica."
+subtitle: 'OCE 313 - Técnicas de análisis no paramétricos.'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+
+## **Introducción**
+
+**¿Qué son las pruebas no paramétricas?**
+
+Conjunto diverso de pruebas estadísticas.
+
+Usualmente no tienen supuestos acerca de la distribución de la variable, alternativamente se conocen como métodos de distribución libre.
+
+El concepto de “no paramétrico” a veces es confuso, pues los métodos no paramétricos si estiman y someten a prueban hipótesis usando parámetros, pero no los de distribución normal.
+
+Se aplican usualmente para variables cuantitativas que no cumplen con el supuesto de normalidad y para variables cualitativas.
+
+El concepto matemático de permutación está subyacente a muchos métodos de análisis no paramétricos. 
+
+**Prueba de correlación no paramétrica**  
+Las pruebas de correlación no paramétricos se usan cuando no se cumplen los supuestos del análisis de correlacion paramétrico de pearson:
+
+Supuestos:
+Las variables X e Y son continuas.
+Existe relación lineal.
+La distribución conjunta de (X, Y) es una distribución Bivariable normal.
+
+**Tablas de contingencia y pruebas Chi cuadrado**  
+Las tablas de contingencia se usan comúnmente para resumir datos de variables categóricas (ej. Cualitativas, dicotómicas). Las pruebas no paramétricas de Chi cuadrado se usan investigar la asociación de dos o más variables categóricas una de las cuales es una variable respuesta y otra es una variable predictora.
+
+**Prueba de Wilkoxon**  
+La prueba de Wilcoxon es una prueba no paramétrica que permite comparar dos muestras, usualmente denominada de Mann-Whitney, y determinar si existen diferencias entre ellas. Se utiliza cuando no se puede suponer la normalidad de dichas muestras. Las muestras pueden ser independientes, pareadas o repetidas.
+
+**Prueba de Kurskal Wallis**  
+La prueba de Kruskal-Wallis es un método no paramétrico que permite evaluar si multiples muesttras independientes provienen de una población común. Comúnmente se utiliza esta prueba como alternativa a un ANOVA cuando los datos no tienen una distribución normal.
+
+## **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Realizar pruebas no paramétricas.
+
+**2**. - Realizar gráficas avanzadas con ggplot2. 
+
+  
+#### Comandos para realizar los análisis.
+
+1.- Importa datos en formato excel
+**read_excel()**  
+
+2.- Crea tablas en formato data frame.
+**data.frame()**  
+
+3.- Agrega nombre a las columnas d eun data.frame
+**colnames()**  
+
+4.- Test de correlación  
+**cor.test()**
+
+5.- Prueba de chi cuadrado   
+***chisq.test()***
+
+6.- Prueba de wilkoxon
+**wilcox.test()**  
+
+7.- Prueba de Kruskal wallis
+**kruskal.test()**  
+
+## EJERCICIOS
+
+Elabore un archivo con extensión **.R**. Habilitelos paquetes **stats**, **readxl** y **ggplot2** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(stats)
+library(pander)
+library(readxl)
+library(ggplot2)
+```
+
+### **Ejercicio 1.**
+En el siguiente experimento se desea evaluar si la abundancia de larvas es mayor en peces que desovan en el ambiente pelágico (PP) que en aquellos de desovan en un ambiente béntico (PB). Se sugiere aplicar el test de Wilcoxon en atención a que ambos grupos provienen de la mismas muestras. Adaptado de [Landaeta y colaboradores, 2015](https://revbiolmar.uv.cl/resumenes/v504/504-563.pdf).
+
+```{r, echo=FALSE}
+PP <- c(140, 110, 120, 155, 100)
+PB <- c(90, 120, 130, 150, 100)
+
+
+dat <- data.frame(PP, PB)
+  
+knitr::kable(dat, col.names=c("Peces pelágicos", "Peces benticos"), caption = "Tabla 1. Abundancia de larvas de peces benticos y pelagicos por 1000 metros cúbicos.")
+
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La abundancia de larvas de peces pelágicos es igual a la abundancia de peces bénticos.
+# H1 : La abundancia de larvas de peces pelágicos es mayor a la abundancia de peces bénticos.
+
+```
+
+b) Cree un data.frame con la abundancia de larvas de peces pelágicos y benticos.
+
+```{r}
+# Crea objetos PB y PP 
+PP <- c(140, 110, 120, 155, 100)
+PB <- c(90, 120, 130, 150, 100)
+
+
+larvas <- data.frame(PP, PB)
+  
+colnames(larvas) <- c("Peces pelágicos", "Peces benticos")
+larvas
+class(larvas)
+```
+
+c) Elabore un boxplot para comparar la abundancia de larvas entre peces pelágicos y bentónicos, use la función **boxplot()**
+
+```{r}
+boxplot(larvas$`Peces pelágicos`, larvas$`Peces benticos` , col=c(2,3), ylab= "Abundancia larvas x 1000 m3", xlab= "Peces")
+legend("bottomleft",
+       legend = c("Pelagicos", "Bentónicos"),
+       fill = 2:3,       # Color de los rectángulos
+       border = "black") # Color del borde de los rectángulos
+```
+
+d) Ponga a prueba su hipótesis usando el test de wilcoxon com la función **wilcox.test()**. No olvide seleccionar en el argumento *alternative=""* para indicar que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*. También incluya el argumento *paired = FALSE* para relevar que la muestra no tiene datos pareados.
+
+```{r, message=FALSE, warning=FALSE}
+# Prueba de Wilcoxon en R (wilcox.test)
+wilcox.test(PP, PB, alternative = "g", paired = FALSE)
+```
+
+e) Interprete sus resultados.
+
+### **Ejercicio 2.**
+En el siguiente experimento se desea evaluar si las temperaturas máxima del mes de abril de Valparaíso son significantivamente más altas que las de Con Con para el mismo mes. Se sugiere aplicar el test de wilcoxon para muestras pareadas en atención a que ambos grupos provienen de la mismos días.
+
+```{r, fig.cap="Figura 1: Temperatura máxima de Valparaiso y Con Cón durante el mes de abril de 2021."}
+tem <- read_excel("temperatura.xlsx", sheet = 2)
+ggplot(tem, aes(x=Dia, y=Temperatura, group=Clasificación)) +
+  geom_line(aes(linetype=Clasificación))+
+  geom_point(aes(shape=Clasificación))
+
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La temperatura máxima de Valparaíso no es mayor a la temperatura máxima de Con Con del mes de abril de 2021.
+# H1 : La temperatura máxima de Valparaíso es mayor a la temperatura máxima de Con Con del mes de abril de 2021
+
+```
+
+b) Importe la hoja 1 set de datos **temperatura** usando la función *read_excel()* de la librería *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando las funciones *summary()* y *str()*.
+
+```{r}
+temperatura <- read_excel("temperatura.xlsx", sheet = 1)
+summary(temperatura)
+str(temperatura)
+```
+
+c) Ponga a prueba su hipótesis usando el test de wilcoxon usando la función **wilcox.test()**, no olvide seleccionar en el argumento *alternative=""* para indicar que hipótesis evaluará *"two.sided"*, *"less"*, *"greater"*. También incluya el argumento *paired = TRUE*.
+
+```{r, message=FALSE, warning=FALSE}
+# no es necesario indicar muestras pareadas pues estamos haciendo la resta en la función.
+wilcox.test(temperatura$Valparaiso - temperatura$ConCon, alternative = "greater")
+```
+
+c) Interprete sus resultados.
+
+
+### **Ejercicio 3.**
+En el siguiente experimento se desea evaluar si la concentración de fitoplancton (células x mililitro x 100.000) es diferente entre los años 2016, 2018, 2020. Adaptado de [Fuica y colaboradores, 2016](file:///Users/macbook/Downloads/01.Fans.pdf).
+
+
+```{r, echo=FALSE}
+g1 <- c(0.4, 0.2, 0.1, 0.3) # Grupo 2016
+g2 <- c(0.5, 0.6, 0.8, 0.4) # Grupo 2018
+g3 <- c(0.9, 1.0, 1.2, 1.1) # Grupo 2020
+
+fito <- data.frame(g1, g2, g3)
+  
+colnames(fito) <- c("2016", "2018","2020")
+
+knitr::kable(fito, col.names=c("2016", "2018","2020"), caption = "Tabla 2. Fitoplancton en el Sur de Chile en los años 2016, 2018 y 2020.")
+```
+
+a) Escriba su hipótesis nula y alternativa para este experimento.
+
+```{r}
+
+# H0 : La concentración de fitoplancton no es diferente entre los años 2016, 2018, 2020.
+# H1 :  La concentración de fitoplancton no es diferente entre los años 2016, 2018, 2020.
+
+```
+
+b) Elabore tres vectores con la concentración de fitoplanton y luego realice un test de kruskal wallis para evaluar su hipótesis.
+
+```{r}
+g1 <- c(0.4, 0.2, 0.1, 0.3) # Grupo 2016
+g2 <- c(0.5, 0.6, 0.8, 0.4) # Grupo 2018
+g3 <- c(0.9, 1.0, 1.2, 1.1) # Grupo 2020
+kruskal.test(list(g1, g2, g3))
+
+```
+
+c) Interprete sus resultados.
