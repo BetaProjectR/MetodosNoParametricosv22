@@ -1,0 +1,192 @@
+---
+title: "Guia introducción al análisis multivariado"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+Calcular  matrices de distancia euclideana y no euclideana usando **software R**.
+  
+#### Conceptos importantes
+
+La estadística multivariante o multivariada es una rama de las estadísticas que abarca la observación y el análisis simultáneos de más de una variable respuesta. La aplicación de la estadística multivariante es llamada [análisis multivariante](https://es.wikipedia.org/wiki/Estad%C3%ADstica_multivariante).
+
+Los análisis multivariantes son muy utilizados en Ciencias del Mar y Oceanografía como herramienta para realizar análisis exploratorio de datos y detectar variables latentes.
+
+**Matriz de distancia o similaridad**  
+Subyacente a muchos de los análisis multivariantes está el uso de matrices de distancia o similaridad por lo que su calculo y adecuada interpretación es fundamental previo a la realización de los análisis multivariantes. 
+
+Una matriz de distancias es una matriz cuyos elementos representan las distancias entre los puntos, tomados por pares, de un conjunto. Se trata, por lo tanto, de una matriz simétrica de tamaño NxN.
+
+**Matriz de distancia euclideana**  
+La distancia euclidiana, es la distancia entre dos puntos de un espacio euclídeo, la cual se deduce a partir del teorema de Pitágoras [Wiki.](https://es.wikipedia.org/wiki/Distancia_euclidiana)
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{stats}**  
+This package contains functions for statistical calculations and random number generation.
+
+**{readxl}**  
+Read Excel Files.
+  
+**{dplyr}**  
+Librería para manipular datos.
+
+**{vegan}**
+Librería que implementa métodos de ordenación y diversidad ecológica.
+
+**{gridExtra}**
+Librería que implementa métodos para elaborar panel con multiples gráficas.
+
+#### Comandos para realizar los análisis.
+
+**read_excel()**  
+Importa datos a R desde archivos excel.
+
+**t()**
+Dada una matriz x, t() entrega la transpuesta x. 
+
+**dist()**
+Calcula diferentes matrices de distancia entre las filas de un conjunto de datos.
+
+**vegdist**
+Calcula diferentes medidas de distancia o similaridad (usualmente para datos de ecología) entre las filas de un conjunto de datos.
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Habilite los pqeuetes,  **readxl**, **dplyr**, **vegan**, **psych** y  **gridExtra** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+library(readxl)
+library(dplyr)
+library(vegan)
+library(psych)
+library(gridExtra)
+library(ggplot2)
+```
+
+A partir del set de datos **bioenv.xlsx** disponibles en el libro  MULTIVARIATE ANALYSIS OF ECOLOGICAL DATA de los autores [Michael Greenacre and Raul Primicerio](https://www.fbbva.es/microsite/multivariate-statistics/) realice los siguientes ejercicios
+
+**Ejercicio 1.** Importar y explorar datos cuantitativos continuos
+
+a) Importe la hoja 1 set de datos **bioenv.xlsx** usando la función *read_excel()* de la librería *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando las funciones *summary()*. Compruebe que todas las variables numéricas están expresadas como número y que las variables Sitio y Sediment sean factores. Caso contrario realice los cambios correspondientes con las funciones **as.numeric()** y **as.factor()**.
+
+```{r}
+bioenv <- read_excel("bioenv.xlsx", sheet = 1)
+
+bioenv$Sitio <- as.factor(bioenv$Sitio)
+bioenv$Sediment <- as.factor(bioenv$Sediment)
+summary(bioenv)
+str(bioenv)
+```
+
+b) Elabore una gráfica de correlaciones de las variables Depth, Pollution y Temperature usando la función **pairs.panels()**.
+
+```{r}
+pairs.panels(bioenv[7:9])
+```
+
+
+**Ejercicio 2.** Matriz distancia euclideana
+
+a) Para las tres variables cuantitativas continuas Depth, Pollution y Temperature elabore 3 variables derivadas Depth1, Pollution1 y Temperature1 con su *valor estandarizado* como la diferencia de cada valor por la media **mean()** y dividiendo por la desviasión estandar **sd()**. Use la función **mutate()** de la librería **dplyr**
+
+```{r}
+# Crea nuevas variables
+val_estandarizado <- bioenv %>%
+ select(Sitio, Depth, Pollution, Temp.) %>%
+ mutate(
+Depth1 = (Depth - mean(Depth)) / sd(Depth),
+Pollution1 = (Pollution - mean(Pollution)) / sd(Pollution),
+Temperature1 = (Temp. - mean(Temp.)) / sd(Temp.))
+```
+
+b) Elabore una gráfica de correlaciones de las variables estandarizadas  usando la función **pairs.panels()** y compare con las correlaciones estimadas en el ejercicio **1b** que calcula la correlación con la variable original.
+
+```{r}
+pairs.panels(val_estandarizado[5:7])
+```
+
+c) Calcule la matriz de distancia euclideana estandarizada a partir de los datos Depth1, Pollution1 y Temperature1. Use la función **dist()**.
+
+```{r}
+dist_euclidea <- dist(val_estandarizado[5:7])
+class(dist_euclidea)
+# extracto de matriz de distancia
+dist_euclidea <- as.matrix(dist_euclidea)
+class(dist_euclidea)
+dist_euclidea[c(1:4),c(1:4)]
+
+```
+
+**Ejercicio 3.** Explorar datos cuantitativos discretos.
+
+a) Realice un gráfico de barras para cada una de las variables discretas de abundancia. Use ggplot() y geom_bar(). Una todas las gráficas con el comando grid.arrange() del paquete gridExtra. Use el siguiente tutorial como referencia http://www.sthda.com/english/wiki/wiki.php?id_contents=7930
+
+```{r}
+a<- ggplot(bioenv, aes(a))+
+  geom_bar()
+
+b<- ggplot(bioenv, aes(b))+
+  geom_bar()
+
+c<- ggplot(bioenv, aes(c))+
+  geom_bar()
+
+d<- ggplot(bioenv, aes(d))+
+  geom_bar()
+
+e<- ggplot(bioenv, aes(e))+
+  geom_bar()
+
+grid.arrange(a, b, c, d, e, ncol=2, nrow =3)
+```
+
+**Ejercicio 4.** Matriz de similaridad Bray-Curtis
+
+a) Elabore una matriz de correlaciones no paramétrica de spearman **cor()** para los sitios s1 a s7 usando la información de abundancia de especies (a,b,c,d y e).
+
+Sugerencia: Transponga el set de datos **bioenv** solo para las columnas ([2:6]). Si desea incluya el nombre de las filas y las columna a esta nueva matriz.
+
+```{r}
+t_bioenv <- t(bioenv[2:6])
+colnames(t_bioenv) <- c("s1",	"s2",	"s3",	"s4",	"s5",	"s6",	"s7",	"s8",	"s9",	"s10",	"s11",	"s12",	"s13",	"s14",	"s15",	"s16",	"s17",	"s18",	"s19",	"s20",	"s21",	"s22",	"s23",	"s24",	"s25",	"s26",	"s27",	"s28",	"s29",	"s30")
+rownames(t_bioenv) <- c("a","b","c","d","e")
+res <- cor(t_bioenv, method = "spearman")
+round(res[c(1:7),c(1:7)], 2)
+```
+
+b) Calcule el índice de disimilaridad de Bray-Curtis usando la función **vegdist()** de la librería **vegan**. 
+
+Exprese el índice como porcentaje y compare con la correlación estimada anteriormente en el ejercicio a.
+
+Sugerencia: imprima disimilaridad de los primeros 7 sitios y redondee a 1 decimal.
+
+```{r}
+
+Bray_curtis <- vegdist(bioenv[2:6], method="bray", binary=FALSE, diag=FALSE, upper=FALSE, na.rm = FALSE)*100
+Bray_curtis <- as.matrix(Bray_curtis)
+round(Bray_curtis[c(1:7),c(1:7)], 1)
+```
+
