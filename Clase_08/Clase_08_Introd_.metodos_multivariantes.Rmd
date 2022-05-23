@@ -62,7 +62,7 @@ knitr::include_graphics("4esquinas.png")
 Fuente: [Multivariate Statistic, 2014](https://www.fbbva.es/microsite/multivariate-statistics/legal.html)
 
 
-# ESTUDIOS DE CASO: ZOOGEOGRAFÍA DE CRUSTACEOS
+# EJEMPLO: ZOOGEOGRAFÍA DE CRUSTACEOS
 
 Agrupamiento jerarquico.  
 ```{r, out.width='70%'}
@@ -71,7 +71,7 @@ knitr::include_graphics("crustaceos.png")
 
 Fuente: [De los Ríos-Escalante et al, 2013](https://www.scielo.cl/scielo.php?script=sci_arttext&pid=S0718-560X2013000500005)
 
-# ESTUDIOS DE CASO: POLIQUETOS
+# EJEMPLO: POLIQUETOS
 
 Escalamiento multidimensional no métrico (NMDS).    
 ```{r, out.width='70%'}
@@ -79,8 +79,6 @@ knitr::include_graphics("poliquetos.png")
 ```
 
 Fuente: [Sanchis, Soto y Quiroga, 2021](https://doi.org/10.1016/j.marpolbul.2021.112309)
-
-# ESTUDIOS DE CASO: 
 
 # MATRIZ DE DISTANCIA O SIMILARIDAD
 
@@ -107,7 +105,7 @@ Fuente: [Sanchis, Soto y Quiroga, 2021](https://doi.org/10.1016/j.marpolbul.2021
 - **No euclideana**: Para variables cuantitativas discretas (conteos).  
  Diferentes alternativas: Bray-Curtis.  
  
-# ISTANCIA EUCLIDEANA
+# DISTANCIA EUCLIDEANA
 
 - Evaluemos efecto de escala de las variables. \
 &nbsp;
@@ -117,13 +115,13 @@ tabla <- bioenv %>% select(Sitio, Depth, Pollution, Temp.) %>% filter(Sitio %in%
 kable(tabla)
 ```
 
-  $s20-s30=\sqrt{(x_1-y_1)^2+(x_2-y_2)^2+(x_3-y_3)^2}$.\
+  $s29-s30=\sqrt{(x_1-y_1)^2+(x_2-y_2)^2+(x_3-y_3)^2}$.\
 &nbsp;
   
-  $s20-s30=\sqrt{(51-99)^2+(6.0-1.9)^2+(3.0-2.9)^2}$.\
+  $s29-s30=\sqrt{(51-99)^2+(6.0-1.9)^2+(3.0-2.9)^2}$.\
 &nbsp;
   
-  $s20-s30=\sqrt{(2304)+(18.81)+(0.01)}= 48.17$
+  $s29-s30=\sqrt{(2304)+(18.81)+(0.01)}= 48.17$
   
 # ESTANDARIZACIÓN
 
@@ -137,7 +135,7 @@ Valor estandarizado s29 : (51 – 74,43) / 16,61 = -1,501
 
 | **Sitio** | **Depth**| **Pollution** | **Temperature** |
 |:------:|:------:|:------:|:------:|
-| **S29** | -1,501 | 0,693 | -0,201 |
+| **s29** | -1,501 | 0,693 | -0,201 |
 | **s30** | 1,573 | -1,222 | -0,557 |
 
 
@@ -145,17 +143,17 @@ Valor estandarizado s29 : (51 – 74,43) / 16,61 = -1,501
 
 | **Sitio** | **Depth**| **Pollution** | **Temperature** |
 |:------:|:------:|:------:|:------:|
-| **S29** | -1,501 | 0,693 | -0,201 |
+| **s29** | -1,501 | 0,693 | -0,201 |
 | **s30** | 1,573 | -1,222 | -0,557 |
 
-  $s20-s30=\sqrt{(-1,501-1,573)^2+(0,693--1,22)^2+(0,201-0,557)^2}$.\
+  $s29-s30=\sqrt{(-1,50-1,57)^2+(0,69-1,22)^2+(0,20-0,55)^2}$.\
 &nbsp;
   
   Distancia estandarizada.  
-  $s20-s30=\sqrt{(9,499)+(3,667)+(0,127)}= 3,639$.\
+  $s29-s30=\sqrt{(9,499)+(3,667)+(0,127)}= 3,639$.\
 &nbsp;
   Distancia no estandarizada.  
-  $s20-s30=\sqrt{(2304)+(18.81)+(0.01)}= 48.17$
+  $s29-s30=\sqrt{(2304)+(18.81)+(0.01)}= 48.17$
 
 # DISTANCIA NO EUCLIDEANA
 
@@ -166,10 +164,10 @@ kable(tabla)
 ```
 
 
-$s20-s30= \frac{\sum|n_ij-n_ij|}{\sum n_i + \sum n_j}$.\
+$s29-s30= \frac{\sum|n_i-n_j|}{\sum n_i + \sum n_j}$.\
 &nbsp;
 
-$s20-s30= \frac{|11-24|+|0-37|+|7-5|+|8-18|+|0-1|}{26+ 85}=\frac{63}{111}=0,568$
+$s29-s30= \frac{|11-24|+|0-37|+|7-5|+|8-18|+|0-1|}{26+ 85}=\frac{63}{111}=0,568$
 
 
 # RESUMEN DE LA CLASE

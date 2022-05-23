@@ -73,7 +73,7 @@ Calcula diferentes medidas de distancia o similaridad (usualmente para datos de 
 
 Realice los ejercicios de forma colaborativa con uno o dos compañeros.
 
-Habilite los pqeuetes,  **readxl**, **dplyr**, **vegan**, **psych** y  **gridExtra** usando la función library().
+Habilite los paquetes **readxl**, **dplyr**, **vegan**, **psych** y  **gridExtra** usando la función **library()**.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
