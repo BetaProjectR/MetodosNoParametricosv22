@@ -1,0 +1,219 @@
+---
+title: "Guia análisis de cluster"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+Realizar análisis de cluster usando **software R**.
+  
+#### Conceptos importantes
+
+**¿Qué son los análisis de cluster?**
+Son herramientas de exploración de datos que permiten agrupar y visualizar datos multivariados con base a su similitud. 
+
+**Clasificación de análisis de cluster**
+**Jerárquico:** Los grupos se fusionan sucesivamente siguiendo una jerarquía de homogeneidad, la cual decrece a medida que se agregan más elementos al grupo. 
+
+**No jerárquico:** Se forman grupos homogéneos sin establecer relaciones o jerarquía  entre ellos.
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{stats}**  
+This package contains functions for statistical calculations and random number generation.
+
+**{readxl}**  
+Read Excel Files.
+  
+**{dplyr}**  
+Librería para manipular datos.
+
+**{vegan}**
+Librería que implementa métodos de ordenación y diversidad ecológica.
+
+**{cluster}**
+Librería que implementa algoritmos para el análisis de cluster
+
+**{factoextra}**
+Librería que implementa algoritmos para el análisis de cluster y visualización usando ggplot2
+
+#### Comandos para realizar los análisis.
+
+**read_excel()**  
+Importa datos a R desde archivos excel.
+
+**select**
+Selecciona variables desde un data.frame o una tibble.
+
+**%>%**
+El operador pipe sirve para concatenar tareas o funciones.
+
+**mutate()**
+Crea nuevas variables a partir de variables originales de un data.frame o una tibble.
+
+**t()**
+Dada una matriz x, t() entrega la transpuesta x. 
+
+**dist()**
+Calcula diferentes matrices de distancia entre las filas de un conjunto de datos.
+
+**vegdist()**
+Calcula diferentes medidas de distancia o similaridad (usualmente para datos de ecología) entre las filas de un conjunto de datos.
+
+**hclust()**
+Realiza análisis de cluster jerarquico sobre una matriz de disimilaridad.
+
+**scale()**
+Función para escalar y centrar variables, util para los análisis de cluster.
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Elabore un archivo Rmarkdown o file con extensión **.R** en Rstudio o Rstudio.cloud.
+
+Habilite los paquetes **readxl**, **dplyr**, **vegan**, **psych**, **cluster** y **factoextra** usando la función **library()**.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+library(readxl)
+library(dplyr)
+library(vegan)
+library(psych)
+library(cluster)
+library(factoextra)
+```
+
+**Estudio de caso: Poliquetos submareales**
+
+Durante el crucero de investigación CIMAR 17 Fiordos se colectaron muestras de Poliquetos submareales de fondo blando en 23 estaciones desde el Estero Reloncaví a boca del Guafo [Rozbaczylo y colaboradores](http://www.shoa.cl/n_cendhoc/productos/cimar17/resumenes/08_nicolas_rozbaczylo.pdf). 
+
+Para cada estación los investigadores calcularon los siguientes índices ecológicos: 
+
+- Riqueza de especies (S).
+- Diversidad específica (H) según Shannon-Weaver.
+- Índice de equidad (J) según Pielou.
+
+A partir del set de datos **poliquetos.xlsx** realice los siguientes ejercicios.
+
+**Ejercicio 1.** Importar y explorar
+
+a) Importe la hoja 1 set de datos **poliquetos.xlsx** usando la función *read_excel()* del paquete *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando las funciones *summary()*. Compruebe que todas las variables numéricas están expresadas como número y que las variable Estaciones sea un factor. Caso contrario realice los cambios correspondientes con las funciones **as.numeric()** y **as.factor()**.
+
+```{r}
+poliqueto <- read_excel("poliquetos.xlsx", sheet = 1)
+summary(poliqueto)
+poliqueto$Estaciones <- as.factor(poliqueto$Estaciones)
+str(poliqueto)
+```
+
+b) Elabore una gráfica de correlaciones de las variables S, H y J usando la función **pairs.panels()**.
+
+```{r}
+pairs.panels(poliqueto[2:4])
+```
+
+
+**Ejercicio 2.** Cluster jerárquico.
+
+a) Para las tres variables cuantitativas continuas S, H y J elabore 3 variables derivadas S1, H1 y J1 con su *valor estandarizado* como la diferencia de cada valor por la media **mean()** y dividiendo por la desviación estandar **sd()**. Use la función **mutate()** de la librería **dplyr**
+
+```{r}
+# Crea nuevas variables
+val_estandarizado <- poliqueto %>%
+ select(S, H, J) %>%
+ mutate(
+  S1 = (S - mean(S)) / sd(S),
+  J1 = (J - mean(J)) / sd(J),
+  H1 = (H - mean(H)) / sd(H))
+```
+
+b) Elabore una gráfica de correlaciones de las variables estandarizadas usando la función **pairs.panels()** y compare con las correlaciones estimadas en el ejercicio **1b** que calcula la correlación con la variable original.
+
+```{r}
+pairs.panels(val_estandarizado[4:6])
+```
+
+c) Calcule la matriz de distancia euclideana estandarizada para las estaciones 1 a 23 usando los tres Índices ecológicos (S1,H1,J1). Use la función **dist()**.
+
+
+```{r}
+# distance matrix
+d <- dist(val_estandarizado[4:6], method = "euclidean") 
+```
+
+Extrae primeros 6 elementos de la matriz
+```{r}
+d_matriz <- as.matrix(d)
+d_matriz[1:6,1:6]
+```
+
+
+d) Elabore una gráfica de cluster jerarquico usando la función **hclust()**. Considere el método UPGMA usando el argumento *method="average"*. Grafique el dendograma con la función **plot()**.
+
+```{r}
+fit <- hclust(d, method="average")
+plot(fit)
+```
+
+
+**Ejercicio 3.** Cluster no jerárquico.
+
+Ahora realizaremos un análisis de cluster no jerarquico con el método k-means y usaremos nuevas funciones para simplificar el proceso de estandarización.
+
+a) Para las tres variables cuantitativas continuas S, H y J estandarice las variables usando la función **scale()**.
+
+```{r}
+poliqueto <- scale(poliqueto[2:4])
+poliqueto
+```
+
+b) Elabore y grafique una matriz de distancia ecuclideana con las funciones **get_dist()** y **fviz_dist** de la librería **factoextra**
+
+```{r}
+distance <- get_dist(poliqueto, method = "euclidean")
+fviz_dist(distance)
+```
+
+c) Realice un análisis de cluster k-means con la función **kmeans** de la librería **stats** y luego grafique con la función y **fviz_cluster()**. Suponga la existencia de 2, 3 y 4 cluster diferentes.
+
+```{r, message=FALSE}
+k2 <- kmeans(poliqueto, centers = 2, nstart = 25)
+fviz_cluster(k2, data = poliqueto)+labs(subtitle = "Cluster no jerarquico = 2 grupos.")
+
+k3 <- kmeans(poliqueto, centers = 3, nstart = 25)
+fviz_cluster(k3, data = poliqueto)+labs(subtitle = "Cluster no jerarquico = 3 grupos.")
+
+k4 <- kmeans(poliqueto, centers = 4, nstart = 25)
+fviz_cluster(k4, data = poliqueto)+labs(subtitle = "Cluster no jerarquico = 4 grupos.")
+```
+
+d) Note que el análisis de cluster por k-means no nos dice nada acerca de cual es el número óptimo de cluster y todos parecen dar una buena representación de los datos. 
+
+Para solucionar este problema use la función **fviz_nbclust()** para determinar y visualizar el número óptimo de cluster. Use los argumentos kmeans, method = "wss".
+
+```{r}
+cluster <- fviz_nbclust(poliqueto, kmeans, method = "silhouette")
+cluster
+
+
+```
+
