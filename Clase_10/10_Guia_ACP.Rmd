@@ -1,0 +1,164 @@
+---
+title: "Guía Análisis de Componentes Principales"
+subtitle: 'Métodos de análisis no paramétricos'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Profesor adjunto de la Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+#### Objetivos de aprendizaje
+
+Elaborar análisis de componentes principales con el
+ **software R**.
+  
+#### Conceptos importantes
+
+**Análisis de componentes principales**  
+Es una herramienta utilizada para realizar análisis exploratorio de datos multivariantes y para construir modelos predictivos.
+
+Permite reducir la dimensionalidad y encontrar patrones en un set de datos mediante el calculo de los “componentes principales”.
+
+Los componentes principales se ordenan por la cantidad de varianza original que describen [Wiki.](https://es.wikipedia.org/wiki/An%C3%A1lisis_de_componentes_principales).
+
+#### Software.
+
+Esta es la versión de R que se usó para crear esta guía.
+```{r, echo=TRUE}
+R.version.string
+```
+
+#### Librerías.
+  
+**{stats}**  
+This package contains functions for statistical calculations and random number generation.
+
+**{readxl}**  
+Read Excel Files.
+  
+**{dplyr}**  
+Librería para manipular datos.
+
+**{psych}**  
+Procedures for Psychological, Psychometric, and Personality
+Research
+
+**{factoextra}**  
+Extract and Visualize the Results of Multivariate Data Analyses.
+
+**{MVN}**  
+Multivariate Normality Tests
+
+#### Comandos para realizar los análisis.
+
+**read_excel()**  
+Importa datos a R desde archivos excel.
+
+
+#### EJERCICIOS
+
+Realice los ejercicios de forma colaborativa con uno o dos compañeros.
+
+Elabore un archivo con extensión **.R** en Rstudio o Rstudio.cloud 
+
+Habilite los paquetes **stats**, **readxl**, **dplyr**, **ggplot2**, **psych**, **factoextra** y **MVN** usando la función library().
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+library(readxl)
+library(dplyr)
+library(psych)
+library(factoextra)
+library(ggplot2)
+library(MVN)
+```
+
+A partir del set de datos **data_PCA.xlsx** parcialmente obtenidos desde el paper de [Rivera y colaboradores, 2019](https://www.sciencedirect.com/science/article/abs/pii/S0025326X19305004?via%3Dihub) que analiza la calidad de agua y la concentración de metales pesados del Humedal el Yali en Chile central realice los siguientes ejercicios.
+
+**Ejercicio 1.** Importar y explorar
+
+a) Importe la hoja 1 set de datos **data_PCA.xlsx** usando la función *read_excel()* de la librería *readxl*. No olvide usar el argumento *Sheet=1*. Explore el set de datos usando las funciones *summary()*. Compruebe que todas las variables,ssin contar Sitio, están expresadas como número. Caso contrario realice los cambios correspondientes con las funciones **as.numeric()**.
+
+```{r, echo=FALSE}
+Yali <- read_excel("data_PCA.xlsx", sheet = 1)
+summary(Yali)
+Yali$PH <- as.numeric(Yali$PH)
+str(Yali)
+```
+
+b) Elabore gráficas de correlaciones no paramétricas de spearman de todas las variables numéricas en grupos de 6 o 7 usando la función **pairs.panels()**.
+
+```{r}
+pairs.panels(Yali[2:7], method = "spearman")
+```
+
+```{r, echo=FALSE}
+pairs.panels(Yali[8:13], method = "spearman")
+pairs.panels(Yali[14:20], method = "spearman")
+```
+
+¿Qué variables están altamente correlacionadas de forma positiva?
+¿Qué variables están altamente correlacionadas de forma negativa?
+¿Qué variables no están altamente correlacionadas?
+
+**Ejercicio 2.** Extrae set de datos
+
+a) Elabore un nuevo set de datos llamado **Yali_new** solo con las variables numéricas (columnas 2-20), utilice la columna Sitio para agregar el nombre de las filas con la función **row.names()**. Visualice el set de datos con **head()**.
+
+```{r}
+Yali_new <- as.data.frame(Yali[,2:20])
+row.names(Yali_new) <- Yali$Sitio
+head(Yali_new)
+```
+
+
+**Ejercicio 3.** Análisis de Componentes Principales
+
+a) Realice un análisis de componentes principales para el nuevo set de datos **Yali_new** con la función **prcomp**, use los argumento *scale = TRUE* para estandarizar las variables de forma automática. Almacene el ACP en un nuevo objeto denominado **Yalipca**.
+
+```{r}
+Yalipca <- prcomp(Yali_new, scale = TRUE)
+```
+
+c) Usando el objeto **Yalipca**, obtenga la varianza explicada por cada CP con la función **get_eigenvalue()** y grafique con la función **fviz_eig()**.
+
+```{r, echo=FALSE}
+get_eigenvalue(Yalipca)
+fviz_eig(Yalipca)
+
+```
+
+¿Cuántos componentes principales se requieren para explicar al menos un 79% de la variabilidad de los datos?
+¿Qué proporción de la variabilidad de los datos son explicadas por los 2 primeros componentes principales?
+
+d) Elabore gráficas para representar la distribución de los sitios **fviz_pca_ind()**, de las variables **fviz_pca_var()** y gráficas Biplot de sitios y variables **fviz_pca_biplot()**
+
+Grafica de sitios
+¿Qué sitio está menos relacionado con el resto respecto del CP1?
+¿Qué sitios están más relacionados respecto del CP2?
+
+```{r}
+fviz_pca_ind(Yalipca, repel = TRUE, addEllipses=TRUE) # evita que se solape el nombre de los sitios
+
+```
+
+Grafica de variables
+¿Qué variables ambientales están altamente correlacionadas de forma positiva?
+¿Qué variables ambientales están altamente correlacionadas de forma negativa?
+¿Qué variables ambientales no están correlacionadas?
+```{r}
+fviz_pca_var(Yalipca)
+```
+
+Gráfica bi-plot
+```{r, echo=FALSE}
+fviz_pca_biplot(Yalipca, repel = TRUE, addEllipses=TRUE)
+```
+
